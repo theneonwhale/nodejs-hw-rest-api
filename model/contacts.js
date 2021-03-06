@@ -1,8 +1,11 @@
 const Contact = require('./schemas/contact');
 
-const listContacts = async () => {
+const listContacts = async userId => {
   try {
-    const result = await Contact.find({});
+    const result = await Contact.find({ owner: userId }).populate({
+      path: 'owner',
+      select: 'name email -_id',
+    });
 
     console.log(`${result.length} contacts was found.`);
 
@@ -12,9 +15,15 @@ const listContacts = async () => {
   }
 };
 
-const getContactById = async contactId => {
+const getContactById = async (contactId, userId) => {
   try {
-    const result = await Contact.findOne({ _id: contactId });
+    const result = await Contact.findOne({
+      _id: contactId,
+      owner: userId,
+    }).populate({
+      path: 'owner',
+      select: 'name email -_id',
+    });
 
     if (!result) {
       console.error(`There is no contact with id ${contactId}.`);
@@ -29,10 +38,11 @@ const getContactById = async contactId => {
   }
 };
 
-const removeContact = async contactId => {
+const removeContact = async (contactId, userId) => {
   try {
     const result = await Contact.findByIdAndRemove({
       _id: contactId,
+      owner: userId,
     });
 
     if (!result) {

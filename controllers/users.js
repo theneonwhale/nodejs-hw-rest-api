@@ -23,6 +23,7 @@ const register = async (req, res, next) => {
       code: HttpCode.CREATED,
       data: {
         user: {
+          name: newUser.name,
           email: newUser.email,
           subscription: newUser.subscription,
         },

@@ -22,18 +22,18 @@ const contactSchema = new Schema(
     subscription: {
       type: String,
       enum: ['free', 'pro', 'premium'],
-      required: [true, 'Set subscription for contact'],
+      default: 'free',
     },
-    password: {
-      type: String,
-      minLength: 6,
-      maxLength: 50,
-      required: [true, 'Set password for contact'],
-    },
-    token: {
-      type: String,
-      default: '',
-    },
+    // password: {
+    //   type: String,
+    //   minLength: 6,
+    //   maxLength: 50,
+    //   required: [true, 'Set password for contact'],
+    // },
+    // token: {
+    //   type: String,
+    //   default: '',
+    // },
     owner: {
       type: SchemaTypes.ObjectId,
       ref: 'user',

@@ -1,16 +1,21 @@
 const express = require('express');
 const router = express.Router();
-
 const contactsController = require('../../../controllers/contacts');
 const validate = require('./validation');
+const guard = require('../../../helpers/guard');
 
 router
-  .get('/', contactsController.get)
-  .post('/', validate.addContact, contactsController.create);
+  .get('/', guard, contactsController.get)
+  .post('/', guard, validate.addContact, contactsController.create);
 
 router
-  .get('/:contactId', contactsController.getById)
-  .delete('/:contactId', contactsController.remove)
-  .patch('/:contactId', validate.updateContact, contactsController.update);
+  .get('/:contactId', guard, contactsController.getById)
+  .delete('/:contactId', guard, contactsController.remove)
+  .patch(
+    '/:contactId',
+    guard,
+    validate.updateContact,
+    contactsController.update,
+  );
 
 module.exports = router;
