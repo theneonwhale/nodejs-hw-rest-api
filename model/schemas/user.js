@@ -10,14 +10,6 @@ const userSchema = new Schema(
       minlength: 2,
       default: 'Guest',
     },
-    sex: {
-      type: String,
-      enum: {
-        values: [Sex.MALE, Sex.FEMALE, Sex.NONE],
-        message: "It isn't allowed",
-      },
-      default: Sex.NONE,
-    },
     email: {
       type: String,
       required: [true, 'Email required'],
@@ -30,6 +22,14 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, 'Password required'],
+    },
+    sex: {
+      type: String,
+      enum: {
+        values: [Sex.MALE, Sex.FEMALE, Sex.NONE],
+        message: "It isn't allowed",
+      },
+      default: Sex.NONE,
     },
     subscription: {
       type: String,
