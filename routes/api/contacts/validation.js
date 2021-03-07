@@ -9,6 +9,7 @@ const schemaAddContact = Joi.object({
       /^\+?[(]?[0-9]{2,4}[)]?\s?-?[0-9]{2,3}-?[0-9]{1,3}-?[0-9]{1,3}-?[0-9]{1,3}$/,
     )
     .required(),
+  subscription: Joi.string().optional(),
 });
 
 const schemaUpdateContact = Joi.object({
@@ -19,6 +20,7 @@ const schemaUpdateContact = Joi.object({
       /^\+?[(]?[0-9]{2,4}[)]?\s?-?[0-9]{2,3}-?[0-9]{1,3}-?[0-9]{1,3}-?[0-9]{1,3}$/,
     )
     .optional(),
+  subscription: Joi.string().optional(),
 });
 
 const validate = (schema, obj, next) => {

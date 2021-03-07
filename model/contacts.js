@@ -1,13 +1,48 @@
 const Contact = require('./schemas/contact');
 
-const listContacts = async userId => {
+const getAllContacts = async (
+  userId,
+  { sortBy, sortByDesc, sub, filter, limit = '20', page = '1' },
+) => {
   try {
-    const result = await Contact.find({ owner: userId }).populate({
-      path: 'owner',
-      select: 'name email -_id',
-    });
+    const data = await Contact.paginate(
+      {
+        owner: userId,
+      },
+      {
+        limit,
+        page,
+        sort: {
+          ...(sortBy ? { [`${sortBy}`]: 1 } : {}),
+          ...(sortByDesc ? { [`${sortByDesc}`]: -1 } : {}),
+        },
+        select: filter ? filter.split('|').join(' ') : '',
+        populate: {
+          path: 'owner',
+          select: 'name email -_id',
+        },
+      },
+    );
 
-    console.log(`${result.length} contacts was found.`);
+    const { docs: contacts, totalDocs: total } = data;
+
+    const result = {
+      total: total.toString(),
+      limit,
+      page,
+      contacts,
+    };
+
+    if (sub) {
+      const filteredContacts = contacts.filter(
+        contact => contact.subscription === sub,
+      );
+      result.total = filteredContacts.length.toString();
+      result.contacts = filteredContacts;
+      console.log(result.total);
+    }
+
+    console.log(`${result.total} contacts was found.`);
 
     return result;
   } catch (error) {
@@ -40,7 +75,7 @@ const getContactById = async (contactId, userId) => {
 
 const removeContact = async (contactId, userId) => {
   try {
-    const result = await Contact.findByIdAndRemove({
+    const result = await Contact.findOneAndRemove({
       _id: contactId,
       owner: userId,
     });
@@ -70,10 +105,10 @@ const addContact = async body => {
   }
 };
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (contactId, body, userId) => {
   try {
-    const result = await Contact.findByIdAndUpdate(
-      { _id: contactId },
+    const result = await Contact.findOneAndUpdate(
+      { _id: contactId, owner: userId },
       { ...body },
       { new: true },
     );
@@ -92,7 +127,7 @@ const updateContact = async (contactId, body) => {
 };
 
 module.exports = {
-  listContacts,
+  getAllContacts,
   getContactById,
   removeContact,
   addContact,

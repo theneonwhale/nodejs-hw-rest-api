@@ -4,9 +4,13 @@ const { HttpCode } = require('../helpers/constants');
 const get = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const contacts = await Contacts.listContacts(userId);
+    const contacts = await Contacts.getAllContacts(userId, req.query);
 
-    return res.json({ status: 'success', code: 200, data: { contacts } });
+    return res.json({
+      status: 'success',
+      code: HttpCode.OK,
+      data: { ...contacts },
+    });
   } catch (error) {
     next(error);
   }
@@ -25,13 +29,11 @@ const getById = async (req, res, next) => {
         data: { contact },
       });
     } else {
-      return res
-        .status(HttpCode.NOT_FOUND)
-        .json({
-          status: 'error',
-          code: HttpCode.NOT_FOUND,
-          message: 'Not found',
-        });
+      return res.status(HttpCode.NOT_FOUND).json({
+        status: 'error',
+        code: HttpCode.NOT_FOUND,
+        message: 'Not found',
+      });
     }
   } catch (error) {
     next(error);
@@ -96,13 +98,11 @@ const update = async (req, res, next) => {
     );
 
     if (JSON.stringify(req.body) === '{}') {
-      return res
-        .status(HttpCode.BAD_REQUEST)
-        .json({
-          status: 'error',
-          code: HttpCode.BAD_REQUEST,
-          message: 'Missing fields',
-        });
+      return res.status(HttpCode.BAD_REQUEST).json({
+        status: 'error',
+        code: HttpCode.BAD_REQUEST,
+        message: 'Missing fields',
+      });
     }
 
     if (contact) {
@@ -113,13 +113,11 @@ const update = async (req, res, next) => {
         data: { contact },
       });
     } else {
-      return res
-        .status(HttpCode.NOT_FOUND)
-        .json({
-          status: 'error',
-          code: HttpCode.NOT_FOUND,
-          message: 'Not found',
-        });
+      return res.status(HttpCode.NOT_FOUND).json({
+        status: 'error',
+        code: HttpCode.NOT_FOUND,
+        message: 'Not found',
+      });
     }
   } catch (error) {
     next(error);
