@@ -90,4 +90,47 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, logout, getCurrentUser };
+const updateUserSub = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+
+    await Users.updateUserSub(id, req.body.subscription);
+    const user = await Users.findById(id);
+    if (JSON.stringify(req.body) === '{}') {
+      return res.status(HttpCode.BAD_REQUEST).json({
+        status: 'error',
+        code: HttpCode.BAD_REQUEST,
+        message: 'Missing fields',
+      });
+    }
+
+    if (user) {
+      return res.json({
+        status: 'success',
+        code: HttpCode.OK,
+        message: 'Contact was updated',
+        data: {
+          name: user.name,
+          email: user.email,
+          subscription: user.subscription,
+        },
+      });
+    } else {
+      return res.status(HttpCode.NOT_FOUND).json({
+        status: 'error',
+        code: HttpCode.NOT_FOUND,
+        message: 'Not found',
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  logout,
+  getCurrentUser,
+  updateUserSub,
+};

@@ -13,6 +13,10 @@ const schemaLoginUser = Joi.object({
   password: Joi.string().min(6).max(50).required(),
 });
 
+const schemaUpdateUserSub = Joi.object({
+  subscription: Joi.string().required(),
+});
+
 const validate = (schema, obj, next) => {
   const { error } = schema.validate(obj);
   if (error) {
@@ -31,4 +35,8 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.loginUser = (req, res, next) => {
   return validate(schemaLoginUser, req.body, next);
+};
+
+module.exports.updateUserSub = (req, res, next) => {
+  return validate(schemaUpdateUserSub, req.body, next);
 };
