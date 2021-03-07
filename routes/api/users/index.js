@@ -8,6 +8,6 @@ const guard = require('../../../helpers/guard');
 router.post('/auth/register', validate.createUser, userController.register);
 router.post('/auth/login', validate.loginUser, userController.login);
 router.post('/auth/logout', guard, userController.logout);
-// router.get('/users/current', userController.getCurrentUser);
+router.get('/current', guard, userController.getCurrentUser);
 
 module.exports = router;

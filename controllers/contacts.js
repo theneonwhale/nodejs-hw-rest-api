@@ -1,4 +1,5 @@
 const Contacts = require('../model/contacts');
+const { HttpCode } = require('../helpers/constants');
 
 const get = async (req, res, next) => {
   try {
@@ -19,14 +20,18 @@ const getById = async (req, res, next) => {
     if (contact) {
       return res.json({
         status: 'success',
-        code: 200,
+        code: HttpCode.OK,
         message: 'Contact was found',
         data: { contact },
       });
     } else {
       return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'Not found' });
+        .status(HttpCode.NOT_FOUND)
+        .json({
+          status: 'error',
+          code: HttpCode.NOT_FOUND,
+          message: 'Not found',
+        });
     }
   } catch (error) {
     next(error);
@@ -39,16 +44,16 @@ const create = async (req, res, next) => {
     const contact = await Contacts.addContact({ ...req.body, owner: userId });
 
     if (contact) {
-      return res.status(201).json({
+      return res.status(HttpCode.CREATED).json({
         status: 'success',
-        code: 201,
+        code: HttpCode.CREATED,
         message: 'Contact was created',
         data: { contact },
       });
     } else {
-      return res.status(400).json({
+      return res.status(HttpCode.BAD_REQUEST).json({
         status: 'error',
-        code: 400,
+        code: HttpCode.BAD_REQUEST,
         message: 'Contact already exists',
       });
     }
@@ -65,14 +70,16 @@ const remove = async (req, res, next) => {
     if (contact) {
       return res.json({
         status: 'success',
-        code: 200,
+        code: HttpCode.OK,
         message: 'Contact deleted',
         data: { contact },
       });
     } else {
-      return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'Not found' });
+      return res.status(HttpCode.NOT_FOUND).json({
+        status: 'error',
+        code: HttpCode.NOT_FOUND,
+        message: 'Not found',
+      });
     }
   } catch (error) {
     next(error);
@@ -90,21 +97,29 @@ const update = async (req, res, next) => {
 
     if (JSON.stringify(req.body) === '{}') {
       return res
-        .status(400)
-        .json({ status: 'error', code: 400, message: 'Missing fields' });
+        .status(HttpCode.BAD_REQUEST)
+        .json({
+          status: 'error',
+          code: HttpCode.BAD_REQUEST,
+          message: 'Missing fields',
+        });
     }
 
     if (contact) {
       return res.json({
         status: 'success',
-        code: 200,
+        code: HttpCode.OK,
         message: 'Contact was updated',
         data: { contact },
       });
     } else {
       return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'Not found' });
+        .status(HttpCode.NOT_FOUND)
+        .json({
+          status: 'error',
+          code: HttpCode.NOT_FOUND,
+          message: 'Not found',
+        });
     }
   } catch (error) {
     next(error);
