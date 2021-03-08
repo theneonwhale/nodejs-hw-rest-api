@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { HttpCode } = require('../../../helpers/constants');
 
 const schemaAddContact = Joi.object({
   name: Joi.string().min(2).max(50).required(),
@@ -8,8 +9,7 @@ const schemaAddContact = Joi.object({
       /^\+?[(]?[0-9]{2,4}[)]?\s?-?[0-9]{2,3}-?[0-9]{1,3}-?[0-9]{1,3}-?[0-9]{1,3}$/,
     )
     .required(),
-  password: Joi.string().min(6).max(50).required(),
-  subscription: Joi.string().required(),
+  subscription: Joi.string().optional(),
 });
 
 const schemaUpdateContact = Joi.object({
@@ -20,7 +20,6 @@ const schemaUpdateContact = Joi.object({
       /^\+?[(]?[0-9]{2,4}[)]?\s?-?[0-9]{2,3}-?[0-9]{1,3}-?[0-9]{1,3}-?[0-9]{1,3}$/,
     )
     .optional(),
-  password: Joi.string().min(6).max(50).optional(),
   subscription: Joi.string().optional(),
 });
 
@@ -29,7 +28,7 @@ const validate = (schema, obj, next) => {
   if (error) {
     const [{ message }] = error.details;
     return next({
-      status: 400,
+      status: HttpCode.BAD_REQUEST,
       message: `Failed: ${message.replace(/"/g, '')}`,
     });
   }
