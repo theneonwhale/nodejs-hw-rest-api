@@ -34,7 +34,7 @@ const register = async (req, res, next) => {
           name: newUser.name,
           email: newUser.email,
           subscription: newUser.subscription,
-          avatar: newUser.avatarURL,
+          avatarURL: newUser.avatarURL,
         },
       },
     });
@@ -92,7 +92,7 @@ const getCurrentUser = async (req, res, next) => {
       data: {
         email: user.email,
         subscription: user.subscription,
-        avatar: user.avatarURL,
+        avatarURL: user.avatarURL,
       },
     });
   } catch (e) {

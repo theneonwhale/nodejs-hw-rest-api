@@ -19,7 +19,7 @@ router.get('/current', guard, userController.getCurrentUser);
 router.patch('/', guard, validate.updateUserSub, userController.updateUserSub);
 router.patch(
   '/avatars',
-  [guard, upload.single('avatar')],
+  [guard, upload.single('avatar'), validate.uploadAvatar],
   userController.avatars,
 );
 module.exports = router;
