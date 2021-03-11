@@ -9,11 +9,12 @@ const { HttpCode } = require('./helpers/constants');
 const usersRouter = require('./routes/api/users');
 const contactsRouter = require('./routes/api/contacts');
 
+const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
+
 require('dotenv').config();
 
 const app = express();
 
-const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
 app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
 
 app.use(express.static('public'));

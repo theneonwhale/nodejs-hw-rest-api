@@ -17,6 +17,18 @@ const schemaUpdateUserSub = Joi.object({
   subscription: Joi.string().required(),
 });
 
+// const uploadAvatar = (req, res, next) => {
+//   if (!req.file) {
+//     return res.status(HttpCode.BAD_REQUEST).json({
+//       status: 'error',
+//       code: HttpCode.BAD_REQUEST,
+//       data: 'Bad request',
+//       message: 'Field of avatar with file not found',
+//     });
+//   }
+//   next();
+// };
+
 const validate = (schema, obj, next) => {
   const { error } = schema.validate(obj);
   if (error) {
@@ -40,3 +52,5 @@ module.exports.loginUser = (req, res, next) => {
 module.exports.updateUserSub = (req, res, next) => {
   return validate(schemaUpdateUserSub, req.body, next);
 };
+
+// module.exports.uploadAvatar = uploadAvatar;
