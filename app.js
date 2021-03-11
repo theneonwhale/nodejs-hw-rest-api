@@ -1,6 +1,7 @@
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
+const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { HttpCode } = require('./helpers/constants');
@@ -8,7 +9,14 @@ const { HttpCode } = require('./helpers/constants');
 const usersRouter = require('./routes/api/users');
 const contactsRouter = require('./routes/api/contacts');
 
+require('dotenv').config();
+
 const app = express();
+
+const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
+app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
+
+app.use(express.static('public'));
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 
@@ -40,7 +48,9 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(HttpCode.INTERNAL_SERVER_ERROR).json({ message: err.message });
+  res
+    .status(err.status || HttpCode.INTERNAL_SERVER_ERROR)
+    .json({ message: err.message });
 });
 
 module.exports = app;
