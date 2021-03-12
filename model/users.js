@@ -25,6 +25,10 @@ const updateAvatar = async (id, avatarURL) => {
   return await User.updateOne({ _id: id }, { avatarURL });
 };
 
+// const updateAvatar = async (id, avatarURL, imgIdCloud) => {
+//   return await User.updateOne({ _id: id }, { avatarURL, imgIdCloud });
+// };
+
 module.exports = {
   findByEmail,
   findById,
