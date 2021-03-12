@@ -22,4 +22,5 @@ router.patch(
   [guard, upload.single('avatar'), validate.uploadAvatar],
   userController.avatars,
 );
+
 module.exports = router;
