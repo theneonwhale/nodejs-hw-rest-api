@@ -6,19 +6,19 @@ const createFolderIsExist = require('../helpers/create-dir');
 const fs = require('fs').promises;
 const path = require('path');
 const Jimp = require('jimp');
-const { promisify } = require('util');
-const cloudinary = require('cloudinary').v2;
+// const { promisify } = require('util');
+// const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
+// cloudinary.config({
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY,
+//   api_secret: process.env.API_SECRET,
+// });
 
-const uploadCloud = promisify(cloudinary.uploader.upload);
+// const uploadCloud = promisify(cloudinary.uploader.upload);
 
 const register = async (req, res, next) => {
   try {
@@ -84,14 +84,14 @@ const login = async (req, res, next) => {
 };
 
 const logout = async (req, res, next) => {
-  const id = req.user.id;
+  const id = req.user._id;
   await Users.updateToken(id, null);
   return res.status(HttpCode.NO_CONTENT).json({});
 };
 
 const getCurrentUser = async (req, res, next) => {
   try {
-    const id = req.user.id;
+    const id = req.user._id;
     const user = await Users.findById(id);
     return res.status(HttpCode.OK).json({
       status: 'success',
@@ -109,7 +109,7 @@ const getCurrentUser = async (req, res, next) => {
 
 const updateUserSub = async (req, res, next) => {
   try {
-    const id = req.user.id;
+    const id = req.user._id;
 
     await Users.updateUserSub(id, req.body.subscription);
     const user = await Users.findById(id);
@@ -146,9 +146,9 @@ const updateUserSub = async (req, res, next) => {
 
 const avatars = async (req, res, next) => {
   try {
-    const id = req.user.id;
-    const avatarUrl = await saveAvatarToStatic(req);
-    await Users.updateAvatar(id, avatarUrl);
+    const id = req.user._id;
+    const avatarURL = await saveAvatarToStatic(req);
+    await Users.updateAvatar(id, avatarURL);
 
     // const {
     //   public_id: imgIdCloud,
@@ -160,7 +160,7 @@ const avatars = async (req, res, next) => {
       status: 'success',
       code: HttpCode.OK,
       data: {
-        avatarUrl,
+        avatarURL,
       },
     });
   } catch (e) {
@@ -169,7 +169,7 @@ const avatars = async (req, res, next) => {
 };
 
 const saveAvatarToStatic = async req => {
-  const id = req.user.id;
+  const id = req.user._id;
   const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
   const pathFile = req.file.path;
   const newNameAvatar = `${Date.now()}-${req.file.originalname}`;
@@ -182,7 +182,7 @@ const saveAvatarToStatic = async req => {
   await createFolderIsExist(path.join(AVATARS_OF_USERS, id));
   await fs.rename(pathFile, path.join(AVATARS_OF_USERS, id, newNameAvatar));
 
-  const avatarUrl = path.normalize(path.join(id, newNameAvatar));
+  const avatarURL = path.normalize(path.join(id, newNameAvatar));
 
   try {
     await fs.unlink(
@@ -191,25 +191,26 @@ const saveAvatarToStatic = async req => {
   } catch (e) {
     console.log(e.message);
   }
-  return avatarUrl;
+  return avatarURL;
 };
 
-const saveAvatarToCloud = async req => {
-  const pathFile = req.file.path;
-  const result = await uploadCloud(pathFile, {
-    folder: 'Photo',
-    transformation: { width: 250, height: 250, crop: 'fill' },
-  });
-  cloudinary.uploader.destroy(req.user.imgIdCloud, (err, result) => {
-    console.log(err, result);
-  });
-  try {
-    await fs.unlink(pathFile);
-  } catch (e) {
-    console.log(e.message);
-  }
-  return result;
-};
+// const saveAvatarToCloud = async req => {
+//   const pathFile = req.file.path;
+//   const result = await uploadCloud(pathFile, {
+//     public_id: req.user.imgIdCloud?.replace('Photo/', ''),
+//     folder: 'Photo',
+//     transformation: { width: 250, height: 250, crop: 'fill' },
+//   });
+//   // cloudinary.uploader.destroy(req.user.imgIdCloud, (err, result) => {
+//   //   console.log(err, result);
+//   // });
+//   try {
+//     await fs.unlink(pathFile);
+//   } catch (e) {
+//     console.log(e.message);
+//   }
+//   return result;
+// };
 
 module.exports = {
   register,
