@@ -18,7 +18,6 @@ const create = async ({
   password,
   sex,
   subscription,
-  verify,
   verificationToken,
 }) => {
   const user = new User({
@@ -27,7 +26,6 @@ const create = async ({
     password,
     sex,
     subscription,
-    verify,
     verificationToken,
   });
   return await user.save();
@@ -37,11 +35,8 @@ const updateToken = async (id, token) => {
   return await User.updateOne({ _id: id }, { token });
 };
 
-const updateVerificationToken = async (id, verify, verificationToken) => {
-  return await User.findOneAndUpdate(
-    { _id: id },
-    { verify, verificationToken },
-  ); // [1]
+const updateVerificationToken = async (id, verificationToken) => {
+  return await User.findOneAndUpdate({ _id: id }, { verificationToken });
 };
 
 const updateUserSub = async (id, subscription) => {

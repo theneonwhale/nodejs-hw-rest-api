@@ -7,6 +7,7 @@ require('dotenv').config();
 class EmailService {
   #sender = sgMail;
   #GenerateTemplate = Mailgen;
+
   constructor(env) {
     switch (env) {
       case 'development':
@@ -23,24 +24,25 @@ class EmailService {
         break;
     }
   }
-  #createTemplate(verifyToken, name = 'Guest') {
+
+  #createTemplate(verificationToken, name = 'Guest') {
     const mailGenerator = new this.#GenerateTemplate({
-      theme: 'neopolitan',
+      theme: 'cerberus',
       product: {
-        name: 'System Cats',
+        name: 'Best Contacts',
         link: this.link,
       },
     });
     const template = {
       body: {
         name,
-        intro: 'Это у нас интро и где ты находишся?',
+        intro: "Welcome! We're very excited to have you on board.",
         action: {
-          instructions: 'Чтобы закончить регистрацию кликните на кнопку',
+          instructions: 'To complete registration, click on the button.',
           button: {
             color: '#22BC66', // Optional action button color
-            text: 'Подтвердить свой аккаунт',
-            link: `${this.link}/api/users/verify/${verifyToken}`,
+            text: 'Confirm your account',
+            link: `${this.link}/api/users/auth/verify/${verificationToken}`,
           },
         },
         outro:
@@ -49,16 +51,17 @@ class EmailService {
     };
     return mailGenerator.generate(template);
   }
-  async sendEmail(verifyToken, email, name) {
-    const emailBody = this.#createTemplate(verifyToken, name);
+
+  async sendEmail(verificationToken, email, name) {
+    const emailBody = this.#createTemplate(verificationToken, name);
     this.#sender.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: email,
-      from: 'no-reply@system-cats.com', // Use the email address or domain you verified above
-      subject: 'Подтверждение регистрации',
+      from: 'a.kylymnyk@gmail.com', // Use the email address or domain you verified above
+      subject: 'Confirmation of registration',
       html: emailBody,
     };
-    //ES6
+
     await this.#sender.send(msg);
   }
 }

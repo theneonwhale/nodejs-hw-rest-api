@@ -40,7 +40,6 @@ const register = async (req, res, next) => {
     await emailService.sendEmail(verificationToken, email, name);
     const newUser = await Users.create({
       ...req.body,
-      verify: false,
       verificationToken,
     });
     return res.status(HttpCode.CREATED).json({
@@ -65,7 +64,7 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await Users.findByEmail(email);
     const isValidPassword = await user?.validPassword(password);
-    if (!user || !isValidPassword || !user.verify) {
+    if (!user || !isValidPassword || user.verificationToken) {
       return res.status(HttpCode.UNAUTHORIZED).json({
         status: 'error',
         code: HttpCode.UNAUTHORIZED,
@@ -224,9 +223,11 @@ const saveAvatarToStatic = async req => {
 
 const verify = async (req, res, next) => {
   try {
-    const user = await Users.findByVerificationToken(req.params.token);
+    const user = await Users.findByVerificationToken(
+      req.params.verificationToken,
+    );
     if (user) {
-      await Users.updateVerificationToken(user.id, true, null);
+      await Users.updateVerificationToken(user.id, null);
       return res.json({
         status: 'success',
         code: HttpCode.OK,
