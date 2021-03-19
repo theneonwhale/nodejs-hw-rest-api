@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Users = require('../model/users');
 const { HttpCode } = require('../helpers/constants');
+const EmailService = require('../services/email');
 const createFolderIsExist = require('../helpers/create-dir');
 
 const fs = require('fs').promises;
@@ -8,6 +9,8 @@ const path = require('path');
 const Jimp = require('jimp');
 // const { promisify } = require('util');
 // const cloudinary = require('cloudinary').v2;
+const { v4: uuidv4 } = require('uuid');
+
 require('dotenv').config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -22,7 +25,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 const register = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, name } = req.body;
     const user = await Users.findByEmail(email);
     if (user) {
       return res.status(HttpCode.CONFLICT).json({
@@ -32,7 +35,14 @@ const register = async (req, res, next) => {
         message: 'Email is used',
       });
     }
-    const newUser = await Users.create(req.body);
+    const verificationToken = uuidv4();
+    const emailService = new EmailService(process.env.NODE_ENV);
+    await emailService.sendEmail(verificationToken, email, name);
+    const newUser = await Users.create({
+      ...req.body,
+      verify: false,
+      verificationToken,
+    });
     return res.status(HttpCode.CREATED).json({
       status: 'success',
       code: HttpCode.CREATED,
