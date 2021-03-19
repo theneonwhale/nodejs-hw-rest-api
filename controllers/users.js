@@ -212,6 +212,28 @@ const saveAvatarToStatic = async req => {
 //   return result;
 // };
 
+const verify = async (req, res, next) => {
+  try {
+    const user = await Users.findByVerificationToken(req.params.token);
+    if (user) {
+      await Users.updateVerificationToken(user.id, true, null);
+      return res.json({
+        status: 'success',
+        code: HttpCode.OK,
+        message: 'Verification successful!',
+      });
+    }
+    return res.status(HttpCode.NOT_FOUND).json({
+      status: 'error',
+      code: HttpCode.NOT_FOUND,
+      data: 'Not found',
+      message: 'User not found',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -219,4 +241,5 @@ module.exports = {
   getCurrentUser,
   updateUserSub,
   avatars,
+  verify,
 };
